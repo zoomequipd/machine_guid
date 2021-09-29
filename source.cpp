@@ -1,6 +1,22 @@
 #include <windows.h>
 #include <iostream>
 
+static std::string GetProductName()
+{
+	std::string ret;
+	char value[64];
+	DWORD size = _countof(value);
+	DWORD type = REG_SZ;
+	HKEY key;
+	LONG retKey = ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\CurrentVersion", 0, KEY_READ | KEY_WOW64_64KEY, &key);
+	LONG retVal = ::RegQueryValueExA(key, "ProductName", nullptr, &type, (LPBYTE)value, &size);
+	if (retKey == ERROR_SUCCESS && retVal == ERROR_SUCCESS) {
+		ret = value;
+	}
+	::RegCloseKey(key);
+	return ret;
+}
+
 
 static std::string GetMachineGUID()
 {
@@ -20,5 +36,7 @@ static std::string GetMachineGUID()
 
 int main() {
 	std::cout << GetMachineGUID();
+	std::cout << GetProductName();
 	return 0;
 }
+
